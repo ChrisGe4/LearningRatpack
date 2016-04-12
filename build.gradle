@@ -1,29 +1,27 @@
 buildscript {
     ext {
-        springBootVersion = '1.3.3.RELEASE'
+        ratpackVersion = '1.0.0'
     }
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("io.ratpack:ratpack-gradle:${ratpackVersion}")
     }
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'spring-boot'
 apply plugin: 'idea'
-
+apply plugin: 'io.ratpack.ratpack-java'
 jar {
-    baseName = 'issue-manager'
+    baseName = 'learning-ratpack'
     version = '0.0.1-SNAPSHOT'
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+    jcenter()
     maven {
         url 'http://repo.spring.io/snapshot'
     }
@@ -31,19 +29,17 @@ repositories {
 
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
-    compile 'org.springframework.social:spring-social-github:1.0.0.BUILD-SNAPSHOT'
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile ratpack.dependency('rx')
+    testCompile ratpack.dependency('test')
+    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+    // spock needs these
+    testCompile 'cglib:cglib:2.2.2'
+    testCompile 'org.objenesis:objenesis:2.1'
 }
 
-
-eclipse {
-    classpath {
-        containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
-        containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
-    }
-}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.9'
 }
+
+mainClassName = 'app.Main'
