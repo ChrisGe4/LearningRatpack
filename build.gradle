@@ -30,6 +30,7 @@ repositories {
 
 dependencies {
     compile ratpack.dependency('rx')
+    compile ratpack.dependency("guice")
     testCompile ratpack.dependency('test')
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
     // spock needs these
