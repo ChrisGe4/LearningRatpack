@@ -32,6 +32,3 @@ public class Main_GuiceInjector {
 
     private static String jsonify(User user) {
         return "{ \"username\": \"" + user.getName() + "\", \"email\": \"" + user.getEmail()
-            + "\" }";
-    }
-}

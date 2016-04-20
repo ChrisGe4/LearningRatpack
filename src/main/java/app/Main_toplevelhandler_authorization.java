@@ -67,6 +67,8 @@ public class Main_toplevelhandler_authorization {
     private static void unauthorized(Context ctx) {
         ctx.getResponse().status(401);
         ctx.getResponse().send();
+        
+
     }
 
     private static String jsonify(User user) {
