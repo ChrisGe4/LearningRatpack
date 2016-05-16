@@ -31,6 +31,10 @@ repositories {
 dependencies {
     compile ratpack.dependency('rx')
     compile ratpack.dependency("guice")
+    compile ratpack.dependency("handlebars")
+    compile ratpack.dependency("thymeleaf")
+    compile ratpack.dependency("session")
+
 
     testCompile ratpack.dependency('test')
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
