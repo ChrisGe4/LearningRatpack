@@ -1,5 +1,6 @@
 package app.dataDrivenApplication.databaseBinding;
 
+import ratpack.exec.Blocking;
 import ratpack.guice.Guice;
 import ratpack.server.RatpackServer;
 
@@ -10,7 +11,6 @@ public class BlockingDatabaseCall {
     public static void main(String[] args) {
 
         RatpackServer.start(ratpackServerSpec -> ratpackServerSpec
-            .registry(Guice.registry(r -> r.module(SqlModule.class))))
-
+            .registry(Guice.registry(r -> r.module(SqlModule.class)))) Blocking
     }
 }

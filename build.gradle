@@ -41,6 +41,12 @@ dependencies {
     compile ratpack.dependency("thymeleaf")
     compile ratpack.dependency("session")
     compile "com.bertramlabs.plugins:ratpack-asset-pipeline:${assetPipelineVersion}"
+    compile('org.grails:grails-datastore-gorm-hibernate4:4.0.7.RELEASE') {
+        exclude module: 'groovy'
+    }
+    compile('org.grails:grails-spring:3.0.9') {
+        exclude module: 'groovy'
+    }
     compile 'com.h2database:h2:1.4.190'
     compile ratpack.dependency("hikari")
 

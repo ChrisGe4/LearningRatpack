@@ -5,6 +5,7 @@ package app.ConditionalResources;
  */
 public class User {
 
+    public long id;
     String username;
 
     public User(String username) {
