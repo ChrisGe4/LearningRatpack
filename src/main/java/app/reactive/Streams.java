@@ -15,5 +15,6 @@ public class Streams {
     //RXJava use observable /subscribe()
 
 
+    //https://github.com/ReactiveX/RxJava/wiki/Backpressure how to handle over-producing Observables (buffer + debounce  or window)
 
 }
