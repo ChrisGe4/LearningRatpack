@@ -34,13 +34,21 @@ public class ConfigSessionModule {
             //If you wish to have session cookies only transmitted over encrypted HTTP (HTTPS), you can configure the secure setting to true (the default is false).
         ).moduleConfig(ClientSideSessionModule.class,
             //{    ConfigData configData = ConfigData.of { it.sysProps().build() }
-    
+
             r.getServerConfig().get("/session", ClientSideSessionConfig.class), c -> {
+                //The sessionCookieName property allows you to customize the key under which the session cookie is stored with the client. This value defaults to ratpack_session.
+                c.setSessionCookieName("ratpack_session");
+                //The secretToken property is the value used to sign the serialized session. This value defaults to a time-based value unless otherwise specified. Signing the serialized session with this value prevents tampering.
                 c.setSecretToken(String.valueOf(Math.floor(System.currentTimeMillis()) / 10000));
+                //you can specify a value to secretKey to encrypt the client-side session cookie. If no value is specified here, then by default the session cookie will not be encrypted.
                 // c.setSecretKey("!c$mB&aGkL112345");
+                //If the session cookie is to be encrypted, you can override the MAC.1 This value defaults to HmacSHA1, which uses the SHA-1 cryptographic hashing function to generate the MAC. The value specified here must be one of the values specified by the javax.crypto.Mac class.
                 c.setMacAlgorithm("HmacSHA1");
+                //You can also override the cipher algorithm that is employed to perform the encryption of the session cookie. This value defaults to AES/CBC/PKCS5Padding, which provides 128-bit encryption of the session cookie. Overrides of this value must be one of the values supported by the javax.crypto.Cipher class.                c.setCipherAlgorithm("AES/CBC/PKCS5Padding");
                 c.setCipherAlgorithm("AES/CBC/PKCS5Padding");
+                //The maxSessionCookieSize value can be used to specify the maximum size of the client-side session cookie. Any value within the range of 1024 and 4096 are valid for this property, and the default size is specified as 1932.
                 c.setMaxSessionCookieSize(1932);
+                //The last value, maxInactivityInterval, is pretty straightforward. It specifies the duration under which a session should remain valid.
                 c.setMaxInactivityInterval(Duration.ofHours(24));
             }))).handlers());
 

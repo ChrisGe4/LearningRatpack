@@ -49,7 +49,7 @@ dependencies {
     }
     compile 'com.h2database:h2:1.4.190'
     compile ratpack.dependency("hikari")
-
+    compile 'io.ratpack:ratpack-session-redis:1.3.3'
 
     testCompile ratpack.dependency('test')
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
