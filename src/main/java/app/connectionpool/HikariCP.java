@@ -43,11 +43,11 @@ public class HikariCP {
                             connection.createStatement().execute(
                                 "CREATE TABLE TEST(ID INT PRIMARY KEY AUTO_INCREMENT, NAME VARCHAR(255))");
                             connection.createStatement()
-                                .execute("INSERT INTO TEST (NAME) VALUES('Luke Daley')");
+                                      .execute("INSERT INTO TEST (NAME) VALUES('Luke Daley')");
                             connection.createStatement()
-                                .execute("INSERT INTO TEST (NAME) VALUES('Rob Fletch')");
+                                      .execute("INSERT INTO TEST (NAME) VALUES('Rob Fletch')");
                             connection.createStatement()
-                                .execute("INSERT INTO TEST (NAME) VALUES('Dan Woods')");
+                                      .execute("INSERT INTO TEST (NAME) VALUES('Dan Woods')");
                         }
                     }
                 })
