@@ -1,0 +1,6 @@
+session:
+    secretKey: "!c$mB&aGkL112345"
+security:
+  basic:
+    userPassMap:
+      chris: 2721182ae9c545fec13ee48edf4de48ddecd608eb522cc63
