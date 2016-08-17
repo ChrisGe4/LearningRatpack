@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Product Login Page</title>
+</head>
+<body>
+<h1>Please Login</h1>
+<!--Here, we define the form and pull in from the template’s model the callbackUrl, to which the form’s parameters will be POSTed. This is the /auth value specified in our ratpack.groovy file.-->
+<form action="${model.callbackUrl}" method="POST">
+    <span>Username: </span>
+    <!--Here, we specify an input text field with the username parameter name.-->
+    <input type="text" name="username" placeholder="username">
+    <br/>
+    <!--Next, we specify a password input field with the password parameter name.-->
+    <span>Password: </span> <input type="password" name="password">
+    <br/>
+    <!--We must also inform the authenticator to which client it should be authenticating, so here we attach a hidden form input field with the client_name parameter name and the FormClient value. This will inform Pac4j to which client implementation it should authenticate the user.-->
+    <input type="hidden" name="client_name" value="FormClient">
+    <!--Finally, we provide a submit button for the user to initiate the authentication sequence.-->
+    <input type="submit" value="Login">
+</form>
+</body>
+</html>

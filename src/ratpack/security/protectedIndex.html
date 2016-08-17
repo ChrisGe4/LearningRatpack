@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--We can utilize the profile supplied to the template’s model to get access to the authenticated user’s ID and render a custom title for their landing page (in this case, their username).-->
+    <title>My Product &bull; ${model.profile.id}</title>
+</head>
+<body>
+<!--We can also use the same method to render some user-specific value in the body (in this case, a simple welcome message).-->
+<h1>Welcome ${model.profile.id}!</h1>
+<p>This is your protected product page!</p>
+<!--Finally, we provide a link to the logout facility so users can escape their authenticated interface.-->
+<p><a href="/logout">Logout</a></p>
+</body>
+</html>
