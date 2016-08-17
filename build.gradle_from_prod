@@ -1,0 +1,239 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://binrepo.target.com/artifactory/tgt-repo"
+        }
+        maven {
+            url "https://binrepo.target.com/artifactory/StoresFlexibleFulfillment"
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath "io.ratpack:ratpack-gradle:1.2.0"
+        classpath 'nu.studer:gradle-jooq-plugin:1.0.6'
+        classpath group: 'org.postgresql', name: 'postgresql', version: '9.4.1208'
+
+    }
+//    configurations.classpath {
+//        resolutionStrategy {                            // enforce a specific jOOQ version
+//            forcedModules = [
+//                    'org.jooq:jooq:3.8.4',
+//                    'org.jooq:jooq-meta:3.8.4',
+//                    'org.jooq:jooq-codegen:3.8.4'
+//            ]
+//        }
+//    }
+}
+
+//sourceSets {
+//    main {
+//        java { srcDir 'java' }
+//        resources { srcDir 'resources' }
+//    }
+//    test {
+//        java { srcDir 'test' }
+//        resources { srcDir 'resources' }
+//    }
+//    integTest {
+//        java.srcDir file('integrationTest')
+//        resources.srcDir file('resources')
+//        compileClasspath += sourceSets.main.output + sourceSets.test.output
+//        runtimeClasspath = output + compileClasspath
+//    }
+//}
+
+// Set our version string
+//---------------------------------------------------------------------------------------------
+//attempt to get the build number from a system variable (works on Jenkins build server)
+def props = new Properties()
+file("src/main/resources/config.properties").withInputStream { props.load(it) }
+def env = System.getenv()
+String buildNumber = env['BUILD_NUMBER']
+def projectName = 'sfm_orderlist'
+
+def today = new Date()
+def buildDateTime = today.format('yyyyMMdd-HHmmss')
+
+def version = majorVersion + '.' + minorVersion + '.' + revisionVersion + '-' + buildDateTime
+
+if (buildNumber != null)
+    rootProject.version = version + '-' + buildNumber
+else
+    rootProject.version = version
+println 'Building as version: ' + rootProject.version
+//---------------------------------------------------------------------------------------------
+
+
+apply plugin: 'io.ratpack.ratpack-java'
+apply plugin: 'idea'
+apply plugin: 'groovy'
+apply plugin: "java"
+apply plugin: "scala"
+apply plugin: 'nu.studer.jooq'
+
+
+
+repositories {
+    maven {
+        url "https://binrepo.target.com/artifactory/tgt-repo"
+    }
+    maven {
+        url "https://binrepo.target.com/artifactory/StoresFlexibleFulfillment"
+    }
+    jcenter()
+}
+
+applicationDefaultJvmArgs = ["-Dconfig.properties=src/main/resources/config.properties", "-Dlogging.file.path=../log/"
+                             , "-Dconsole.log=info", "-DRollingFile.log=info", "-Djson.log=info",
+                             "-Dkafka.log=info", "-Dkafka.host.port=10.65.133.33:9092,10.65.133.80:9092,10.65.133.87:9092", "-DappName=sfm_orderlist"]
+
+
+apply from: 'gradle/test.gradle' // Inheritance -  test.gradle file
+dependencies {
+    compile "org.codehaus.groovy:groovy-all:2.4.5"
+    compile 'org.apache.httpcomponents:httpmime:4.2.4'
+    compile 'org.apache.httpcomponents:httpclient:4.3.4'
+    compile 'javax.validation:validation-api:1.1.0.Final'
+    //compile 'org.hibernate:hibernate-validator:5.2.4.Final'
+    compile 'javax.el:javax.el-api:3.0.0'
+    compile 'org.apache.commons:commons-lang3:3.0'
+    compile 'org.json:json:20090211'
+    compile 'ASL:FFServicesErrorFramework:1.0'
+    compile 'ASL:ratpack-header-interceptor:3.0'
+    compile 'ASL:stores-logging-api:1.0'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+
+    compile 'org.apache.logging.log4j:log4j-api:2.5'
+    compile 'org.apache.logging.log4j:log4j-core:2.5'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.1'
+
+    compile 'org.apache.kafka:kafka-clients:0.8.2.2'
+    compile ratpack.dependency("guice")
+
+    //scala
+    compile "org.scala-lang:scala-library:2.9.2"
+    compile "org.scala-lang:scala-compiler:2.9.2"
+
+    compile group: 'io.gatling', name: 'gatling-app', version: '2.1.7'
+    compile group: 'io.gatling', name: 'gatling-recorder', version: '2.1.7'
+    compile group: 'io.gatling.highcharts', name: 'gatling-charts-highcharts', version: '2.1.7'
+    compile 'org.jooq:jooq:3.6.2'
+
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+    testCompile "org.hamcrest:hamcrest-core:1.3" // only necessary if Hamcrest matchers are used
+    testCompile "com.athaydes:spock-reports:1.2.9" //Spock reports
+    testCompile "junit:junit:4.11"
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+    testCompile "io.gatling.highcharts:gatling-charts-highcharts:2.1.3"
+    testCompile "org.scala-lang:scala-library:2.11.6"
+    testCompile "org.mockito:mockito-core:1.+"
+
+    testRuntime "cglib:cglib-nodep:3.1"
+    // allows mocking of classes (in addition to interfaces)
+    testRuntime "org.objenesis:objenesis:2.1"
+    // allows mocking of classes without default constructor (together with CGLIB)
+
+
+    runtime files('src/main/resources') //adds our properties to the classpath for gradle run events
+}
+
+defaultTasks = ['clean', 'build']
+
+task collectJars(type: Copy) {
+    into "$buildDir/output/lib"
+    from configurations.testRuntime
+
+    test {
+        systemProperty "config.properties", 'src/main/resources/config.properties'
+        systemProperty "log4j.configurationFile", "src/main/resources/testingLog4j2.xml"
+        systemProperty "kafka.host.port", "10.65.133.33:9092"
+        systemProperty "kafka.log", "info"
+        systemProperty "console.log", "info"
+        systemProperty "RollingFile.log", "info"
+        testLogging {
+            // Show that tests are run in the command-line output
+            events 'started', 'passed'
+        }
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'com.app.Main'
+    }
+    baseName = projectName + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude "META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA"
+    with jar
+}
+
+configurations {
+    compile.exclude group: 'ch.qos.logback'
+}
+
+artifacts {
+    archives fatJar
+}
+
+mainClassName = "com.app.Main"
+
+
+jooq {
+    sfm(sourceSets.main) {
+        jdbc {
+            driver = props.getProperty("db.driver")
+            url = props.getProperty("db.url")
+            user = props.getProperty("db.user")
+            password = props.getProperty("db.password")
+            schema = props.getProperty("db.schema")
+            properties {
+                property {
+                    key = 'ssl'
+                    value = props.getProperty("db.ssl")
+                }
+            }
+        }
+        generator {
+            name = 'org.jooq.util.DefaultGenerator'
+            strategy {
+                name = 'org.jooq.util.DefaultGeneratorStrategy'
+                // ...
+            }
+            database {
+                name = 'org.jooq.util.postgres.PostgresDatabase'
+                inputSchema = props.getProperty("db.inputSchema")
+                // ...
+            }
+
+//            customTypes {
+//                customType {
+//                    name = "com.google.gson.JsonElement"
+//                    converter = "com.vault.dao.PostgresJSONGsonBinding"
+//                }
+//            }
+//            forcedTypes {
+//                forcedType {
+//                    name = "com.google.gson.JsonElement"
+//                    expression = ".*data.*|.*tags.*"
+//                    types = ".*"
+//                }
+//            }
+            generate {
+                relations = true
+                deprecated = false
+                records = true
+                immutablePojos = true
+                fluentSetters = true
+                pojos = true
+                validationAnnotations = true
+                // ...
+            }
+//            target {
+//                packageName = 'jooq'
+//                // directory = ...
+//            }
+        }
+    }
+}
