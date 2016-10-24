@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        ratpackVersion = '1.3.3'
+        ratpackVersion = '1.4.0'
         assetPipelineVersion = "2.4.3"
 
     }
@@ -60,6 +60,8 @@ dependencies {
     compile "org.pac4j:pac4j-http:1.8.6"
     //Finally, pac4j-http basic authentication support depends on commons-codec, but it is not transitively included in the dependency, so we must add it here explicitly.
     compile "commons-codec:commons-codec:1.10"
+    //metrics
+    compile ratpack.dependency("dropwizard-metrics")
 
     testCompile ratpack.dependency('test')
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
